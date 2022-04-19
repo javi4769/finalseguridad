@@ -1,3 +1,27 @@
+def generate_sim_key():
+    password = os.urandom(16)
+    salt = os.urandom(16)
+    key = PBKDF2(password, salt, 32, 1000000, hmac_hash_module=SHA256)
+    return key
+
+def receive():
+    while(True):
+        try:
+            message = client.recv(1024).decode('utf-8')
+            if message == 'Ingrese usuario: ':
+                client.send(user.encode('utf-8'))      
+            else:
+                print(message)
+        except:
+            print('Ha ocurrido un error.')
+            client.close()
+            break
+def write():
+    while(True):
+        message = input("")
+        message = user +": " + message 
+        client.send(message.encode('utf-8'))
+
 # Importamos bibliotecas necesarias
 import socket 
 import threading
@@ -15,6 +39,8 @@ from Crypto.PublicKey import RSA
 from Crypto.Signature.pkcs1_15 import PKCS115_SigScheme
 import binascii
 from Crypto.Cipher import PKCS1_OAEP
+import getpass
+
 
 
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -26,37 +52,9 @@ parser.add_argument("-p", "--port", help="Puerto del Servidor")
 args = parser.parse_args()
 client.connect((args.server,int(args.port)))
 user = args.user
-
-def receive():
-    while(True):
-        try:
-            message = client.recv(1024).decode('utf-8')
-            if message == 'Ingrese usuario: ':
-                client.send(user.encode('utf-8'))      
-            elif message == '\n Sesión iniciada correctamente.':
-                print(message)
-                key = generate_sim_key()        
-                client.send(key)
-            elif message == '\n Conectado con éxito a la sesión.':
-                print(message)
-            else:
-                print(message)
-        except:
-            print('Ha ocurrido un error.')
-            client.close()
-            break
-def write():
-    while(True):
-        message = f'{user}: {input("")}'
-        client.send(message.encode('utf-8'))
-
-def generate_sim_key():
-    password = os.urandom(16)
-    salt = os.urandom(16)
-    key = PBKDF2(password, salt, 32, 1000000, hmac_hash_module=SHA256)
-    return key
-
+    
 receive_thread = threading.Thread(target=receive)
 receive_thread.start()
+
 write_thread = threading.Thread(target=write)
 write_thread.start()

@@ -27,9 +27,6 @@ def accept_connections():
         broadcast(f'El usuario {user} se ha unido a la sesión.'.encode('utf-8'))
         if len(clients) == 1:
             client.send('\n Sesión iniciada correctamente.'.encode('utf-8'))
-            key = client.recv(1024)
-            print(key)
-            client.send('Ok cuh'.encode('utf-8'))
         else:
             client.send('\n Conectado con éxito a la sesión.'.encode('utf-8'))
         
