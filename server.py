@@ -10,7 +10,7 @@ def recvall(sock):
 
 def broadcast(message):
     for client in clients:
-        client.send(message)
+        client.sendall(message)
 
 def handle(client):
     while True:
@@ -29,16 +29,16 @@ def accept_connections():
     while True:
         client, address = server.accept()
         print(f'{str(address)} Se conectó con éxito.')
-        client.send('Ingrese usuario: '.encode('utf-8'))
+        client.sendall('Ingrese usuario: '.encode('utf-8'))
         user = recvall(client).decode('utf-8')
         users.append(user)
         clients.append(client)
         print(f'Usuario {user} correctamente registrado.')
         broadcast(f'El usuario {user} se ha unido a la sesión.'.encode('utf-8'))
         if len(clients) == 1:
-            client.send('\n Sesión iniciada correctamente.'.encode('utf-8'))
+            client.sendall('\n Sesión iniciada correctamente.'.encode('utf-8'))
         else:
-            client.send('\n Conectado con éxito a la sesión.'.encode('utf-8'))
+            client.sendall('\n Conectado con éxito a la sesión.'.encode('utf-8'))
         
         thread = threading.Thread(target=handle,args=(client,))
         thread.start()
@@ -62,7 +62,19 @@ server.listen()
 clients = []
 users = []
 print("Servidor montado en la dirección: "+ host + " en el puerto: "+str(port))
-print('El servidor esta esperando conexiones...')
+print('El servidor esta esperando la primera conexión...')
+client, address = server.accept()
+print(f'{str(address)} Se conectó con éxito.')
+client.sendall('Ingrese usuario: '.encode('utf-8'))
+user = recvall(client).decode('utf-8')
+users.append(user)
+clients.append(client)
+print(f'Primer usuario {user} correctamente registrado.')
+client.sendall('\n Sesión iniciada correctamente.'.encode('utf-8'))
+respuesta_llave_sim = recvall(client).decode('utf-8')
+print(respuesta_llave_sim)
+thread = threading.Thread(target=handle,args=(client,))
+thread.start()
 
 
 accept_connections()
