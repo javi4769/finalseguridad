@@ -11,7 +11,10 @@ def receive():
             if message == 'Ingrese usuario: ':
                 client.send(user.encode('utf-8'))      
             else:
-                print(message)
+                if (user + ":") in message:
+                    pass
+                else:
+                    print(message)
         except:
             print('Ha ocurrido un error.')
             client.close()
@@ -19,8 +22,11 @@ def receive():
 def write():
     while(True):
         message = input("")
-        message = user +": " + message 
-        client.send(message.encode('utf-8'))
+        if message == "clear":
+            os.system("clear")
+        else:
+            message = user +": " + message 
+            client.send(message.encode('utf-8'))
 
 # Importamos bibliotecas necesarias
 import socket 
