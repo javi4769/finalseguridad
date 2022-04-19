@@ -1,3 +1,13 @@
+def recvall(sock):
+    BUFF_SIZE = 1024
+    data = b''
+    while True:
+        part = sock.recv(BUFF_SIZE)
+        data += part
+        if len(part) < BUFF_SIZE:
+            break
+    return data
+
 def broadcast(message):
     for client in clients:
         client.send(message)
@@ -5,7 +15,7 @@ def broadcast(message):
 def handle(client):
     while True:
         try:
-            message = client.recv(1024)
+            message = recvall(client)
             broadcast(message)
         except:
             index = clients.index(client)
@@ -20,7 +30,7 @@ def accept_connections():
         client, address = server.accept()
         print(f'{str(address)} Se conectó con éxito.')
         client.send('Ingrese usuario: '.encode('utf-8'))
-        user = client.recv(1024).decode('utf-8')
+        user = recvall(client).decode('utf-8')
         users.append(user)
         clients.append(client)
         print(f'Usuario {user} correctamente registrado.')

@@ -1,3 +1,13 @@
+def recvall(sock):
+    BUFF_SIZE = 1024
+    data = b''
+    while True:
+        part = sock.recv(BUFF_SIZE)
+        data += part
+        if len(part) < BUFF_SIZE:
+            break
+    return data
+
 def generate_sim_key():
     password = os.urandom(16)
     salt = os.urandom(16)
@@ -7,7 +17,7 @@ def generate_sim_key():
 def receive():
     while(True):
         try:
-            message = client.recv(1024).decode('utf-8')
+            message = recvall(client).decode('utf-8')
             if message == 'Ingrese usuario: ':
                 client.send(user.encode('utf-8'))      
             else:
