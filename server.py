@@ -1,3 +1,9 @@
+#def encrypt_AES(message,key):    
+   # key1 = generate_sim_key()
+  #  cipher = AES.new(key1, AES.MODE_EAX,nonce=b'0')
+ #   CT = cipher.encrypt(message)
+#    return CT
+
 def recvall(sock):
     BUFF_SIZE = 1024
     data = b''
@@ -9,6 +15,7 @@ def recvall(sock):
     return data
 
 def broadcast(message):
+    print(message)
     for client in clients:
         client.sendall(message)
 
@@ -22,31 +29,28 @@ def handle(client):
             clients.remove(client)
             user = users[index]
             users.remove(user)
-            broadcast(f'El usuario {user} ha dejado la sesión'.encode('utf-8'))
+            broadcast(f'El usuario {user} ha dejado la sesión'.encode('latin1'))
             break
 
 def accept_connections():
     while True:
         client, address = server.accept()
         print(f'{str(address)} Se conectó con éxito.')
-        client.sendall('Ingrese usuario: '.encode('utf-8'))
-        user = recvall(client).decode('utf-8')
+        client.sendall('Ingrese usuario: '.encode('latin1'))
+        user = recvall(client).decode('latin1')
         users.append(user)
         clients.append(client)
         print(f'Usuario {user} correctamente registrado.')
-        broadcast(f'El usuario {user} se ha unido a la sesión.'.encode('utf-8'))
-        if len(clients) == 1:
-            client.sendall('\n Sesión iniciada correctamente.'.encode('utf-8'))
-        else:
-            client.sendall('\n Conectado con éxito a la sesión.'.encode('utf-8'))
-        
+        broadcast(f'El usuario {user} se ha unido a la sesión.'.encode('latin1'))
         thread = threading.Thread(target=handle,args=(client,))
         thread.start()
+
 
 
 import threading
 import socket
 import argparse
+import time
 
 parser = argparse.ArgumentParser(description='Proyecto Final Seguridad Informática - Brucelee Campos - CINVESTAV')
 parser.add_argument("-p", "--port", help="Puerto del Servidor")
@@ -63,18 +67,9 @@ clients = []
 users = []
 print("Servidor montado en la dirección: "+ host + " en el puerto: "+str(port))
 print('El servidor esta esperando la primera conexión...')
-client, address = server.accept()
-print(f'{str(address)} Se conectó con éxito.')
-client.sendall('Ingrese usuario: '.encode('utf-8'))
-user = recvall(client).decode('utf-8')
-users.append(user)
-clients.append(client)
-print(f'Primer usuario {user} correctamente registrado.')
-client.sendall('\n Sesión iniciada correctamente.'.encode('utf-8'))
-respuesta_llave_sim = recvall(client).decode('utf-8')
-print(respuesta_llave_sim)
-thread = threading.Thread(target=handle,args=(client,))
-thread.start()
+
+#respuesta_llave_sim = recvall(client).decode('latin1')
+
 
 
 accept_connections()
